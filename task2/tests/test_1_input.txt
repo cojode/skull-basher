@@ -1,0 +1,18 @@
+
+word
+a 
+an 
+a.b
+A! test
+AN unusual CASE
+a
+an
+A
+An
+And
+anaconda
+.
+!
+?
+;
+:
