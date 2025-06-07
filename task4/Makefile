@@ -4,6 +4,8 @@ LDFLAGS +=
 
 SRC_DIR = hl
 OBJ_DIR = build/obj
+MKDIR=mkdir -p
+RM=rm -rf
 
 TARGETS = hldetector hlgenerator
 
@@ -15,36 +17,23 @@ COMMON_OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(COMMON_SRCS))
 DETECTOR_OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(DETECTOR_SRCS))
 GENERATOR_OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(GENERATOR_SRCS))
 
-ifeq ($(OS),Windows_NT)
-    RM = del /Q /S
-    MKDIR = mkdir
-    BIN_EXT = .exe
-    PATHSEP = \\
-else
-    RM = rm -rf
-    MKDIR = mkdir -p
-    BIN_EXT =
-    PATHSEP = /
-endif
-
 .PHONY: all clean directories
 
 all: directories $(TARGETS)
 
 directories:
-	@$(MKDIR) $(subst /,$(PATHSEP),$(OBJ_DIR))
+	@$(MKDIR) $(OBJ_DIR)
 
-hldetector$(BIN_EXT): $(DETECTOR_OBJS) $(COMMON_OBJS)
+hldetector: $(DETECTOR_OBJS) $(COMMON_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-hlgenerator$(BIN_EXT): $(GENERATOR_OBJS) $(COMMON_OBJS)
+hlgenerator: $(GENERATOR_OBJS) $(COMMON_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@$(MKDIR) $(subst /,$(PATHSEP),$(dir $@))
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
+	@$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 clean:
-	$(RM) $(subst /,$(PATHSEP),$(OBJ_DIR)) $(addsuffix $(BIN_EXT),$(TARGETS))
+	$(RM) $(OBJ_DIR) $(TARGETS)
 
 -include $(COMMON_OBJS:.o=.d) $(DETECTOR_OBJS:.o=.d) $(GENERATOR_OBJS:.o=.d)
