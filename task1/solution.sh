@@ -1,1 +1,1 @@
-find . -name "*.cmake" -exec sh -c 'head -n 5 "$1" | grep -qi "copyright" && echo $1' sh {} \;
+find $dir -type f -name "*.cmake" -exec sh -c 'head -n 5 "$1" | grep -qi "copyright" && echo $1' sh {} \;f

@@ -1,10 +1,15 @@
 #!/bin/bash
 
-cat $* | sed -E '
-    s/^(a|an)[[:space:]]//I;
-    s/^(a|an)$//I;
-    1~2 s/.*/\U&/;
-    2~2 s/.*/\L&/;
-    s/([^.?!:;])$/\1./;
-    s/^$/./;
-'
+cat "$@" | awk '{
+    gsub(/^(a|an|A|An|aN|AN)[[:space:]]/, "");
+    gsub(/^(a|an|A|An|aN|AN)$/, "");
+
+    if (NR % 2 == 1) $0 = toupper($0);
+    else $0 = tolower($0);
+
+    if (!/^$/ && !/[.?!:;]$/) $0 = $0 ".";
+
+    if (/^$/) $0 = ".";
+
+    print;
+}'
