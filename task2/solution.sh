@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cat "$@" | awk '{
-    gsub(/^(a|an|A|An|aN|AN)[[:space:]]/, "");
-    gsub(/^(a|an|A|An|aN|AN)$/, "");
+    gsub(/^(a|an)[[:space:]]/i, "");
+    gsub(/^(a|an)$/i, "");
 
     if (NR % 2 == 1) $0 = toupper($0);
     else $0 = tolower($0);
