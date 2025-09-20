@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-cat "$@" | awk '{
+cat "$@" | awk '
+BEGIN {ORS=""}
+{
     gsub(/^(a|an|A|An|aN|AN)[[:space:]]/, "");
     gsub(/^(a|an|A|An|aN|AN)$/, "");
 
@@ -11,5 +13,7 @@ cat "$@" | awk '{
 
     if (/^$/) $0 = ".";
 
-    print;
+    if (NR > 1) print "\n"
+
+    print
 }'

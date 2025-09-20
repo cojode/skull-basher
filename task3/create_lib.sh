@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # trap execution errors
 set -e
@@ -36,12 +36,12 @@ mkdir -p "$LIBRARY_DIR/prices"
 chmod 750 "$LIBRARY_DIR/prices"
 
 # delegate directory to a provided group
-sudo chown :"$GROUP_NAME" "$LIBRARY_DIR/prices"
+chown :"$GROUP_NAME" "$LIBRARY_DIR/prices"
 
 # create a tmp symlink, targeting system /tmp with our custom subdirectories
-sudo mkdir -p "/tmp/$LIBRARY_DIR/.tmp"
+mkdir -p "/tmp/$LIBRARY_DIR/.tmp"
 ln -sf "/tmp/$LIBRARY_DIR/.tmp" "$LIBRARY_DIR"
 
 # provide permissions for the actual tmp directories
-sudo chmod 1770 "/tmp/$LIBRARY_DIR/.tmp"
-sudo chown :"$GROUP_NAME" "/tmp/$LIBRARY_DIR/.tmp"
+chmod 1770 "/tmp/$LIBRARY_DIR/.tmp"
+chown :"$GROUP_NAME" "/tmp/$LIBRARY_DIR/.tmp"

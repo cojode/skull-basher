@@ -1,50 +1,40 @@
 CC ?= gcc
-CFLAGS += -Wall -Wextra -std=c11 -Ihl
+CFLAGS += -Wall -Wextra -std=c99 -Ihl
 LDFLAGS +=
 
-SRC_DIR = hl
-OBJ_DIR = build/obj
+MKDIR = mkdir -p
+RM = rm -rf
 
 TARGETS = hldetector hlgenerator
-
-COMMON_SRCS = $(SRC_DIR)/common.c $(SRC_DIR)/hlparser.c $(SRC_DIR)/strlcat.c
-DETECTOR_SRCS = $(SRC_DIR)/hldetector.c
-GENERATOR_SRCS = $(SRC_DIR)/hlgenerator.c
-
-COMMON_OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(COMMON_SRCS))
-DETECTOR_OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(DETECTOR_SRCS))
-GENERATOR_OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(GENERATOR_SRCS))
-
-ifeq ($(OS),Windows_NT)
-    RM = del /Q /S
-    MKDIR = mkdir
-    BIN_EXT = .exe
-    PATHSEP = \\
-else
-    RM = rm -rf
-    MKDIR = mkdir -p
-    BIN_EXT =
-    PATHSEP = /
-endif
 
 .PHONY: all clean directories
 
 all: directories $(TARGETS)
 
 directories:
-	@$(MKDIR) $(subst /,$(PATHSEP),$(OBJ_DIR))
+	@$(MKDIR) build/obj
 
-hldetector$(BIN_EXT): $(DETECTOR_OBJS) $(COMMON_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+hldetector: build/obj/hldetector.o build/obj/common.o build/obj/hlparser.o build/obj/strlcat.o
+	$(CC) $(CFLAGS) -o hldetector build/obj/hldetector.o build/obj/common.o build/obj/hlparser.o build/obj/strlcat.o $(LDFLAGS)
 
-hlgenerator$(BIN_EXT): $(GENERATOR_OBJS) $(COMMON_OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+hlgenerator: build/obj/hlgenerator.o build/obj/common.o build/obj/hlparser.o build/obj/strlcat.o
+	$(CC) $(CFLAGS) -o hlgenerator build/obj/hlgenerator.o build/obj/common.o build/obj/hlparser.o build/obj/strlcat.o $(LDFLAGS)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@$(MKDIR) $(subst /,$(PATHSEP),$(dir $@))
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
+# Explicit rules for each object file
+build/obj/common.o: hl/common.c
+	$(CC) $(CFLAGS) -c hl/common.c -o build/obj/common.o
+
+build/obj/hlparser.o: hl/hlparser.c
+	$(CC) $(CFLAGS) -c hl/hlparser.c -o build/obj/hlparser.o
+
+build/obj/strlcat.o: hl/strlcat.c
+	$(CC) $(CFLAGS) -c hl/strlcat.c -o build/obj/strlcat.o
+
+build/obj/hldetector.o: hl/hldetector.c
+	$(CC) $(CFLAGS) -c hl/hldetector.c -o build/obj/hldetector.o
+
+build/obj/hlgenerator.o: hl/hlgenerator.c
+	$(CC) $(CFLAGS) -c hl/hlgenerator.c -o build/obj/hlgenerator.o
 
 clean:
-	$(RM) $(subst /,$(PATHSEP),$(OBJ_DIR)) $(addsuffix $(BIN_EXT),$(TARGETS))
-
--include $(COMMON_OBJS:.o=.d) $(DETECTOR_OBJS:.o=.d) $(GENERATOR_OBJS:.o=.d)
+	$(RM) build/obj $(TARGETS)
